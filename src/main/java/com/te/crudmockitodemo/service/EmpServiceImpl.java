@@ -23,6 +23,7 @@ public class EmpServiceImpl implements EmpService {
 
 	@Override
 	public EmpDto register(EmpDto empDto) {
+		log.info("in service");
 		Employee map = modelMapper.map(empDto, Employee.class);
 		Employee save = empDao.save(map);
 		return modelMapper.map(save, EmpDto.class);

@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-public class Employee {
+public class Employee  {
 	@Id
 	private String empId;
 	private String empPwd;
 	private String empName;
 	private String empMail;
+//	private String roll;
 }
