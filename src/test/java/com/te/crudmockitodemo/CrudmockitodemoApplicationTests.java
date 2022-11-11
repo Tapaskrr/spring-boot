@@ -1,6 +1,7 @@
 package com.te.crudmockitodemo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.RETURNS_SMART_NULLS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import com.te.crudmockitodemo.dto.EmpDto;
 import com.te.crudmockitodemo.dto.LoginDto;
 import com.te.crudmockitodemo.dto.ResponseDto;
 import com.te.crudmockitodemo.entity.Employee;
+import com.te.crudmockitodemo.service.EmpService;
 import com.te.crudmockitodemo.service.EmpServiceImpl;
 
  
@@ -34,18 +36,26 @@ class CrudmockitodemoApplicationTests {
 	private MockMvc mockMvc;
 	
 	@Autowired
-	private EmpServiceImpl empServiceImpl;
+	private EmpService empService;
 	
 	@MockBean
 	private EmpDao dao;
 	
 	@Test
-	public void registerTest() {
+	public void registerPositiveTest() {
 		EmpDto dto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
 		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
 		when(dao.save(emp)).thenReturn(emp);
-		assertEquals(dto, empServiceImpl.register(dto));
+		assertEquals(dto, empService.register(dto));
 	}
+	
+//	@Test
+//	public void registerNegativeTest() {
+//		EmpDto dto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
+//		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
+//		when(dao.save(emp)).thenReturn(null);
+//		assertEquals(dto, empService.register(dto));
+//	}
 	
 	@Test
 	public void loginTest() {
@@ -53,7 +63,7 @@ class CrudmockitodemoApplicationTests {
 		EmpDto empDto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
 		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
 		when(dao.findByEmpId(dto.getEmpId())).thenReturn(emp);
-		assertEquals(empDto, empServiceImpl.login(dto));
+		assertEquals(empDto, empService.login(dto));
 	}
 
 	@Test
@@ -61,15 +71,18 @@ class CrudmockitodemoApplicationTests {
 		EmpDto dto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
 		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
 		when(dao.save(emp)).thenReturn(emp);
-		assertEquals(dto, empServiceImpl.register(dto));
+		assertEquals(dto, empService.register(dto));
 	}
 	
 	@Test
 	public void deleteTest() {
 		String empId="tys1";
+//		String empId="tys1";
 		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
-		empServiceImpl.delete(empId);
+		when(dao.findByEmpId(empId)).thenReturn(emp);
+		empService.delete(empId);
 		verify(dao, times(1)).deleteById(empId);
+//		assertEquals(true, empService.delete(empId));
 	}
 	
 	@Test
@@ -143,7 +156,7 @@ class CrudmockitodemoApplicationTests {
 //	@Test
 //	public void testRegisterController() throws Exception {
 //		EmpDto dto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
-//		when(empServiceImpl.register(dto)).thenReturn(dto);
+//		when(empService.register(dto)).thenReturn(dto);
 //		mockMvc.perform(post("/start/register").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(jsonPath("$.msg", Matchers.is("successfully registered")));
 //	}
 	

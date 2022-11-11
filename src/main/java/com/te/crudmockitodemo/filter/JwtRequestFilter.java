@@ -53,6 +53,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				log.info("jwt generated in filter");
 				log.info("{}", userDetails.getUsername());
 				log.info("{}", userDetails.getPassword());
+				log.info("{}",userDetails.getAuthorities().toString());
 				jwt.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 				SecurityContextHolder.getContext().setAuthentication(jwt);

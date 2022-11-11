@@ -1,8 +1,11 @@
 package com.te.crudmockitodemo.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.te.crudmockitodemo.dto.EmpDto;
 import com.te.crudmockitodemo.dto.LoginDto;
 import com.te.crudmockitodemo.dto.ResponseDto;
+import com.te.crudmockitodemo.entity.Authority;
 import com.te.crudmockitodemo.service.EmpService;
 import com.te.crudmockitodemo.util.JwtUtil;
 
@@ -42,12 +46,15 @@ public class EmpController {
 	private UserDetailsService detailsService;
 
 	// create----------
+
 	@PostMapping("/register")
-	public ResponseEntity<?> registerEntity(@RequestBody EmpDto empDto) {
+	public ResponseEntity<?> registerEntity(@Valid @RequestBody EmpDto empDto) {
 		log.info("excute");
+		EmpDto register = empServiceImpl.register(empDto);
 		try {
 			return new ResponseEntity<ResponseDto>(
-					new ResponseDto(true, "successfully registered", empServiceImpl.register(empDto)), HttpStatus.OK);
+					
+					new ResponseDto(true, "successfully registered",register ), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "registration failed", null),
 					HttpStatus.BAD_REQUEST);
@@ -71,38 +78,45 @@ public class EmpController {
 	public ResponseEntity<?> updateEntity(@RequestBody EmpDto empDto) {
 		try {
 			return new ResponseEntity<ResponseDto>(
-					new ResponseDto(true, "successfully registered", empServiceImpl.update(empDto)), HttpStatus.OK);
+					new ResponseDto(true, "successfully updated", empServiceImpl.update(empDto)), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "registration failed", null),
+			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "updation failed", null),
 					HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	// delete------------------
 	@DeleteMapping("/delete/{empId}")
-	public ResponseEntity<?> updateEntity(@PathVariable String empId) {
+	public ResponseEntity<?> deleteEntity(@PathVariable String empId) {
 		try {
 			return new ResponseEntity<ResponseDto>(
-					new ResponseDto(true, "successfully registered", empServiceImpl.delete(empId)), HttpStatus.OK);
+					new ResponseDto(true, "successfully deleted", empServiceImpl.delete(empId)), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "registration failed", null),
+			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "deletion failed", null),
 					HttpStatus.BAD_REQUEST);
 		}
 	}
 	
+//	@PreAuthorize("admin")
 	@PostMapping("/authenticate")
-	public ResponseEntity<?> creatAuthToken(@RequestBody LoginDto dto){
+	public ResponseEntity<?> creatAuthToken(@RequestBody Authority dto){
 		log.info("inside authenticate");
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmpId(), dto.getEmpPwd()));
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getName(), dto.getPwd()));
 		} catch (AuthenticationException e) {
 			e.printStackTrace();
 		}
 		
-		UserDetails loadUserByUsername = detailsService.loadUserByUsername(dto.getEmpId());
-		String generateToken = jwtUtil.generateToken(loadUserByUsername);
+		UserDetails loadUserByUsername = detailsService.loadUserByUsername(dto.getName());
+		if (dto.getPwd().equals(loadUserByUsername.getPassword())) {
+			String generateToken = jwtUtil.generateToken(loadUserByUsername);
+			
+			return new ResponseEntity<ResponseDto>(new ResponseDto(true,"token generated",generateToken),HttpStatus.OK);
+		} else {
+			return new ResponseEntity<ResponseDto>(new ResponseDto(true,"token genereration failed","password is wrong"),HttpStatus.OK);
+		}
 		
-		return new ResponseEntity<ResponseDto>(new ResponseDto(true,"token generated",generateToken),HttpStatus.OK);
+		
 //		return new ResponseEntity<ResponseDto>(new ResponseDto(true,"token generated","hello world"),HttpStatus.OK);
 	}
 

@@ -36,8 +36,14 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		log.info("httpsecurity");
-		http.csrf().disable().authorizeRequests().antMatchers("/start/authenticate").permitAll().anyRequest()
-				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//		.antMatchers("/start/login").hasRole("admin")
+		http.csrf().disable().authorizeRequests().antMatchers("/start/authenticate").permitAll()
+		.antMatchers("/start/login")
+		.hasAnyAuthority("admin","user")
+		.antMatchers("/start/delete")
+		.hasAuthority("admin")
+		.anyRequest()
+		.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 		log.info("httpsecurity method");
 	}

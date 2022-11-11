@@ -8,6 +8,7 @@ import com.te.crudmockitodemo.dao.EmpDao;
 import com.te.crudmockitodemo.dto.EmpDto;
 import com.te.crudmockitodemo.dto.LoginDto;
 import com.te.crudmockitodemo.entity.Employee;
+import com.te.crudmockitodemo.exception.EmployeeException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +24,21 @@ public class EmpServiceImpl implements EmpService {
 
 	@Override
 	public EmpDto register(EmpDto empDto) {
-		log.info("in service");
-		Employee map = modelMapper.map(empDto, Employee.class);
-		Employee save = empDao.save(map);
+		log.info("in register method of service");
+		Employee map;
+		try {
+			map = modelMapper.map(empDto, Employee.class);
+		} catch (Exception e) {
+			throw new EmployeeException("not able to map from dto to entity");
+		}
+		log.info("map is : {}",map);
+		Employee save;
+		try {
+			save = empDao.save(map);
+		} catch (Exception e) {
+			throw new EmployeeException("not able to save entity in database");
+		}
+		log.info("save is : {}",save);
 		return modelMapper.map(save, EmpDto.class);
 	}
 
