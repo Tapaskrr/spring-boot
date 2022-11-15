@@ -1,6 +1,7 @@
 package com.te.crudmockitodemo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_SMART_NULLS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +28,7 @@ import com.te.crudmockitodemo.dto.EmpDto;
 import com.te.crudmockitodemo.dto.LoginDto;
 import com.te.crudmockitodemo.dto.ResponseDto;
 import com.te.crudmockitodemo.entity.Employee;
+import com.te.crudmockitodemo.exception.EmployeeException;
 import com.te.crudmockitodemo.service.EmpService;
 import com.te.crudmockitodemo.service.EmpServiceImpl;
 
@@ -49,12 +52,22 @@ class CrudmockitodemoApplicationTests {
 		assertEquals(dto, empService.register(dto));
 	}
 	
+	@Test
+	public void loginNegativeTest() throws Exception {
+		LoginDto dto=new LoginDto("tys1","12345");
+//		EmpDto empDto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
+		Employee emp=new Employee("tys1","1234","tapas","tapas@gmail.com");
+		when(dao.findByEmpId(dto.getEmpId())).thenReturn(emp);
+		assertThrows(EmployeeException.class, ()->empService.login(dto));
+	}
+	
 //	@Test
-//	public void registerNegativeTest() {
-//		EmpDto dto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
-//		Employee emp=new Employee("tys1","12345","tapas","tapas@gmail.com");
-//		when(dao.save(emp)).thenReturn(null);
-//		assertEquals(dto, empService.register(dto));
+//	public void loginNegativeTestDemo() throws Exception {
+//		LoginDto dto=new LoginDto("tys1","");
+////		EmpDto empDto=new EmpDto("tys1","12345","tapas","tapas@gmail.com");
+//		Employee emp=new Employee("tys1","","tapas","tapas@gmail.com");
+//		when(dao.findByEmpId(dto.getEmpId())).thenReturn(emp);
+//		assertThrows(EmployeeException.class, ()->empService.login(dto));
 //	}
 	
 	@Test

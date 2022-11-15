@@ -24,7 +24,14 @@ public class EmpServiceImpl implements EmpService {
 
 	@Override
 	public EmpDto register(EmpDto empDto) {
-		log.info("in register method of service");
+//		log.info("inside register method of service");
+//		if(empDto.getEmpPwd().length()<2) {
+//			;
+//		}else {
+//			log.info("exception in else part of service register method");
+//			throw new EmployeeException("password length is more than 1");
+//		}
+//		log.info("in register method of service");
 		Employee map;
 		try {
 			map = modelMapper.map(empDto, Employee.class);
@@ -47,7 +54,11 @@ public class EmpServiceImpl implements EmpService {
 
 		Employee findByEmpId = empDao.findByEmpId(loginDto.getEmpId());
 		if (findByEmpId != null) {
-			return modelMapper.map(findByEmpId, EmpDto.class);
+			if (findByEmpId.getEmpPwd().equals(loginDto.getEmpPwd())) {
+				return modelMapper.map(findByEmpId, EmpDto.class);
+			}else {
+				throw new EmployeeException("password is wrong");
+			}
 		}
 		return null;
 	}

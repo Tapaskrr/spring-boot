@@ -49,12 +49,12 @@ public class EmpController {
 
 	@PostMapping("/register")
 	public ResponseEntity<?> registerEntity(@Valid @RequestBody EmpDto empDto) {
-		log.info("excute");
-		EmpDto register = empServiceImpl.register(empDto);
+		log.info("excute1");
+//		EmpDto register = ;
 		try {
 			return new ResponseEntity<ResponseDto>(
 					
-					new ResponseDto(true, "successfully registered",register ), HttpStatus.OK);
+					new ResponseDto(true, "successfully registered",empServiceImpl.register(empDto) ), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "registration failed", null),
 					HttpStatus.BAD_REQUEST);
@@ -63,19 +63,22 @@ public class EmpController {
 
 	// retrieve--------------
 	@PostMapping("/login")
-	public ResponseEntity<?> loginEntity(@RequestBody LoginDto loginDto) {
+	public ResponseEntity<?> loginEntity(@Valid @RequestBody LoginDto loginDto) {
+//		EmpDto login = ;
 		try {
+			empServiceImpl.login(loginDto);
 			return new ResponseEntity<ResponseDto>(
 					new ResponseDto(true, "successfully login", empServiceImpl.login(loginDto)), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<ResponseDto>(new ResponseDto(false, "login failed", null),
 					HttpStatus.BAD_REQUEST);
 		}
+//			return null;
 	}
 
 	// update-------------------
 	@PutMapping("/update")
-	public ResponseEntity<?> updateEntity(@RequestBody EmpDto empDto) {
+	public ResponseEntity<?> updateEntity(@Valid @RequestBody EmpDto empDto) {
 		try {
 			return new ResponseEntity<ResponseDto>(
 					new ResponseDto(true, "successfully updated", empServiceImpl.update(empDto)), HttpStatus.OK);
@@ -87,7 +90,7 @@ public class EmpController {
 
 	// delete------------------
 	@DeleteMapping("/delete/{empId}")
-	public ResponseEntity<?> deleteEntity(@PathVariable String empId) {
+	public ResponseEntity<?> deleteEntity(@Valid @PathVariable String empId) {
 		try {
 			return new ResponseEntity<ResponseDto>(
 					new ResponseDto(true, "successfully deleted", empServiceImpl.delete(empId)), HttpStatus.OK);

@@ -14,14 +14,15 @@ import lombok.NonNull;
 @AllArgsConstructor
 @Data
 public class EmpDto {
-//	@NotEmpty
+	@NotEmpty
 	private String empId;
-//	@NotEmpty
-//	@Size(min = 3,max = 10,message = "password must be minimum of 3 and maximum of 4")
+	@NotEmpty
+	@Size(min = 3,max = 10,message = "password must be minimum of 3 and maximum of 10")
 	private String empPwd;
-//	@NotEmpty
+	@NotEmpty
 	private String empName;
-//	@Email(message = "email address not valid")
+	@NotEmpty
+	@Email(message = "email address not valid")
 	private String empMail;
 //	private String roll;
 }
